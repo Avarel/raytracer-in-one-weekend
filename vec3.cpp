@@ -3,26 +3,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-inline float vec3::x() const { return e[0]; }
-inline float vec3::y() const { return e[1]; }
-inline float vec3::z() const { return e[2]; }
-inline float vec3::r() const { return x(); }
-inline float vec3::g() const { return y(); }
-inline float vec3::b() const { return z(); }
-
-inline const vec3 &vec3::operator+() const { return *this; }
-inline vec3 vec3::operator-() const { return vec3(-x(), -y(), -z()); }
-inline float vec3::operator[](int i) const { return e[i]; }
-inline float &vec3::operator[](int i) { return e[i]; }
-
-inline float vec3::length() const
-{
-    return sqrt(x() * x() + y() * y() + z() * z());
-}
-inline float vec3::squared_length() const
-{
-    return x() * x() + y() * y() + z() * z();
-}
+// Inline pure functions can live in implementation files.
 
 inline std::istream &operator>>(std::istream &is, vec3 &t)
 {

@@ -1,7 +1,13 @@
 #include <iostream>
 #include "vec3.h"
 
+// Chapter 1:
 // g++ main.cpp
+// ./a.out > output/chapter_1.ppm
+
+// Chapter 2:
+// g++ main.cpp vec3.cpp
+// ./a.out > output/chapter_2.ppm
 
 using std::cout;
 using std::endl;
