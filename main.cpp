@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vec3.h"
+#include "vec3.cpp"
 
 // Chapter 1:
 // g++ main.cpp
@@ -23,11 +23,10 @@ int main()
     {
         for (int i = 0; i < nx; i++)
         {
-            vec3 col(float(i) / float(nx), float(j) / float(ny),0.2);
-            int ir = int(255.99 * col.r());
-            int ig = int(255.99 * col.g());
-            int ib = int(255.99 * col.b());
-            cout << ir << " " << ig << " " << ib << endl;
+            vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
+            col *= 255.99;
+            col.make_round_int();
+            cout << col << endl;
         }
     }
     return 0;
