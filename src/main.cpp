@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vec3.h"
+#include "vec3.hpp"
 
 using std::cout;
 using std::endl;
@@ -15,7 +15,6 @@ int main()
     {
         for (int i = 0; i < nx; i++)
         {
-            cout << ye() << endl;
             vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
             col *= 255.99;
             col.make_round_int();
