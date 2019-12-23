@@ -1,13 +1,5 @@
 #include <iostream>
-#include "vec3.cpp"
-
-// Chapter 1:
-// g++ main.cpp
-// ./a.out > output/chapter_1.ppm
-
-// Chapter 2:
-// g++ main.cpp vec3.cpp
-// ./a.out > output/chapter_2.ppm
+#include "vec3.h"
 
 using std::cout;
 using std::endl;
@@ -23,6 +15,7 @@ int main()
     {
         for (int i = 0; i < nx; i++)
         {
+            cout << ye() << endl;
             vec3 col(float(i) / float(nx), float(j) / float(ny), 0.2);
             col *= 255.99;
             col.make_round_int();
