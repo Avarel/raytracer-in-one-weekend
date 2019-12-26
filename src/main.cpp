@@ -1,10 +1,9 @@
 #include <iostream>
-#include <float.h>
-#include "math.h"
-#include "vec3.hpp"
+#include <cfloat>
 #include "ray.hpp"
 #include "hitable_list.hpp"
 #include "sphere.hpp"
+#include "camera.hpp"
 
 using std::cout;
 using std::endl;
@@ -25,8 +24,9 @@ vec3 color(const ray &r, hitable *world)
 
 int main()
 {
-    int nx = 200;
-    int ny = 100;
+    int nx = 200; // x size
+    int ny = 100; // y size
+    int ns = 100; // samples
     cout << "P3" << endl
          << nx << " " << ny << endl
          << "255" << endl;
@@ -41,15 +41,22 @@ int main()
     list[1] = new sphere(vec3(0, -100.5, -1), 100);
     hitable *world = new hitable_list(list, 2);
 
+    camera cam;
+
     for (int j = ny - 1; j >= 0; j--)
     {
         for (int i = 0; i < nx; i++)
         {
-            float u = float(i) / float(nx);
-            float v = float(j) / float(ny);
+            vec3 col(0, 0, 0);
+            for (int s = 0; s < ns; s++)
+            {
+                float u = float(i + drand48()) / float(nx);
+                float v = float(j + drand48()) / float(ny);
+                ray r = cam.get_ray(u, v);
+                col += color(r, world);
+            }
 
-            ray r(origin, lower_left_corner + u * horizontal + v * vertical);
-            vec3 col = color(r, world);
+            col /= float(ns);
             col *= 255.99;
             col = round_int(col);
 

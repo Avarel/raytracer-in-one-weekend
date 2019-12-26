@@ -59,7 +59,8 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "unordered_map": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "cfloat": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }
