@@ -41,8 +41,8 @@ public:
     inline float length() const;
     inline float squared_length() const;
 
-    inline void make_round_int();
-    inline void make_unit_vector();
+    // inline void make_round_int();
+    // inline void make_unit_vector();
 };
 
 inline std::istream &operator>>(std::istream &is, vec3 &t)
@@ -164,19 +164,24 @@ inline float vec3::squared_length() const
     return x * x + y * y + z * z;
 }
 
-inline void vec3::make_round_int()
-{
-    x = int(x);
-    y = int(y);
-    z = int(z);
-}
+// inline void vec3::make_round_int()
+// {
+//     x = int(x);
+//     y = int(y);
+//     z = int(z);
+// }
 
-inline void vec3::make_unit_vector()
+// inline void vec3::make_unit_vector()
+// {
+//     float k = 1.0 / length();
+//     x *= k;
+//     y *= k;
+//     z *= k;
+// }
+
+inline vec3 round_int(vec3 v)
 {
-    float k = 1.0 / length();
-    x *= k;
-    y *= k;
-    z *= k;
+    return vec3(int(v.x), int(v.y), int(v.z));
 }
 
 inline vec3 unit_vector(vec3 v)
