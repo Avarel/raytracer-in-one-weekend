@@ -4,8 +4,7 @@
 
 class material;
 
-struct hit_record
-{
+struct hit_record {
     // Hit parameter
     float t;
     // Hit point
@@ -15,8 +14,7 @@ struct hit_record
     material *mat_ptr;
 };
 
-class hitable
-{
+class hitable {
 public:
     virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const = 0;
 };

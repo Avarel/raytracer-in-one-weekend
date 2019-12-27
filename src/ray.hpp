@@ -2,8 +2,7 @@
 #define RAY_H
 #include "vec3.hpp"
 
-class ray
-{
+class ray {
 public:
     // Initial position
     vec3 A;
