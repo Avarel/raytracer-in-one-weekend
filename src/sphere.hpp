@@ -1,9 +1,9 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
-#include "hitable.hpp"
+#include "hittable.hpp"
 #include "ray.hpp"
 
-class sphere : public hitable {
+class sphere : public hittable {
 public:
     vec3 center;
     float radius;

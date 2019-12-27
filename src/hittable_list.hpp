@@ -1,18 +1,18 @@
 #ifndef HITABLE_LIST_HPP
 #define HITABLE_LIST_HPP
-#include "hitable.hpp"
+#include "hittable.hpp"
 
-class hitable_list : public hitable {
+class hittable_list : public hittable {
 public:
     int list_size;
-    hitable **list;
+    hittable **list;
 
-    hitable_list() {}
-    hitable_list(hitable **l, int n) : list(l), list_size(n) {}
+    hittable_list() {}
+    hittable_list(hittable **l, int n) : list(l), list_size(n) {}
     virtual bool hit(const ray &r, float tmin, float tmax, hit_record &rec) const;
 };
 
-bool hitable_list::hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
+bool hittable_list::hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
     hit_record temp_rec;
     bool hit_anything = false;
     double closest_so_far = t_max;
