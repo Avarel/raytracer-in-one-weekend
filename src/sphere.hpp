@@ -8,14 +8,14 @@ class sphere : public hitable
 public:
     vec3 center;
     float radius;
-    material* mat_ptr;
+    material *mat_ptr;
 
     sphere() {}
-    sphere(vec3 cen, float r, material* mat) : center(cen), radius(r), mat_ptr(mat) {}
-    virtual bool hit(const ray& r, float t_min, float t_max, hit_record& rec) const;
+    sphere(vec3 cen, float r, material *mat) : center(cen), radius(r), mat_ptr(mat) {}
+    virtual bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const;
 };
 
-bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const
+bool sphere::hit(const ray &r, float t_min, float t_max, hit_record &rec) const
 {
     // Return t=parameter where the ray hits the sphere.
     vec3 oc = r.origin() - center;
