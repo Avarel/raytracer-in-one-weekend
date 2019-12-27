@@ -1,9 +1,9 @@
 #ifndef VEC3_HPP
 #define VEC3_HPP
 
+#include <iostream>
 #include <math.h>
 #include <stdlib.h>
-#include <iostream>
 
 // Inline member functions need to live in the header file.
 
@@ -25,18 +25,18 @@ public:
     inline float g() const { return y; }
     inline float b() const { return z; }
 
-    inline const vec3 &operator+() const { return *this; }
+    inline const vec3& operator+() const { return *this; }
     inline vec3 operator-() const { return vec3(-x, -y, -z); }
 
     // inline float operator[](int i) const { return e[i]; }
     // inline float &operator[](int i) { return e[i]; }
 
-    inline vec3 &operator+=(const vec3 &v2);
-    inline vec3 &operator-=(const vec3 &v2);
-    inline vec3 &operator*=(const vec3 &v2);
-    inline vec3 &operator/=(const vec3 &v2);
-    inline vec3 &operator*=(const float t);
-    inline vec3 &operator/=(const float t);
+    inline vec3& operator+=(const vec3& v2);
+    inline vec3& operator-=(const vec3& v2);
+    inline vec3& operator*=(const vec3& v2);
+    inline vec3& operator/=(const vec3& v2);
+    inline vec3& operator*=(const float t);
+    inline vec3& operator/=(const float t);
 
     inline float length() const;
     inline float squared_length() const;
@@ -45,39 +45,39 @@ public:
     // inline void make_unit_vector();
 };
 
-inline std::istream &operator>>(std::istream &is, vec3 &t)
+inline std::istream& operator>>(std::istream& is, vec3& t)
 {
     is >> t.x >> t.y >> t.z;
     return is;
 }
 
-inline std::ostream &operator<<(std::ostream &os, const vec3 &t)
+inline std::ostream& operator<<(std::ostream& os, const vec3& t)
 {
     os << t.x << " " << t.y << " " << t.z;
     return os;
 }
 
-inline vec3 operator+(const vec3 &v1, const vec3 &v2)
+inline vec3 operator+(const vec3& v1, const vec3& v2)
 {
     return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
-inline vec3 operator-(const vec3 &v1, const vec3 &v2)
+inline vec3 operator-(const vec3& v1, const vec3& v2)
 {
     return vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-inline vec3 operator*(const vec3 &v1, const vec3 &v2)
+inline vec3 operator*(const vec3& v1, const vec3& v2)
 {
     return vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
-inline vec3 operator/(const vec3 &v1, const vec3 &v2)
+inline vec3 operator/(const vec3& v1, const vec3& v2)
 {
     return vec3(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z);
 }
 
-inline vec3 operator*(float t, const vec3 &v)
+inline vec3 operator*(float t, const vec3& v)
 {
     return vec3(v.x * t, v.y * t, v.z * t);
 }
@@ -87,24 +87,24 @@ inline vec3 operator/(const vec3 v, float t)
     return vec3(v.x / t, v.y / t, v.z / t);
 }
 
-inline vec3 operator*(const vec3 &v, float t)
+inline vec3 operator*(const vec3& v, float t)
 {
     return vec3(v.x * t, v.y * t, v.z * t);
 }
 
-inline float dot(const vec3 &v1, const vec3 &v2)
+inline float dot(const vec3& v1, const vec3& v2)
 {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-inline vec3 cross(const vec3 &v1, const vec3 &v2)
+inline vec3 cross(const vec3& v1, const vec3& v2)
 {
     return vec3(v1.y * v2.z - v1.z * v2.y,
                 v1.z * v2.x - v1.x * v2.z,
                 v1.x * v2.y - v1.y * v2.x);
 }
 
-inline vec3 &vec3::operator+=(const vec3 &v)
+inline vec3& vec3::operator+=(const vec3& v)
 {
     x += v.x;
     y += v.y;
@@ -112,7 +112,7 @@ inline vec3 &vec3::operator+=(const vec3 &v)
     return *this;
 }
 
-inline vec3 &vec3::operator*=(const vec3 &v)
+inline vec3& vec3::operator*=(const vec3& v)
 {
     x *= v.x;
     y *= v.y;
@@ -120,7 +120,7 @@ inline vec3 &vec3::operator*=(const vec3 &v)
     return *this;
 }
 
-inline vec3 &vec3::operator/=(const vec3 &v)
+inline vec3& vec3::operator/=(const vec3& v)
 {
     x /= v.x;
     y /= v.y;
@@ -128,7 +128,7 @@ inline vec3 &vec3::operator/=(const vec3 &v)
     return *this;
 }
 
-inline vec3 &vec3::operator-=(const vec3 &v)
+inline vec3& vec3::operator-=(const vec3& v)
 {
     x -= v.x;
     y -= v.y;
@@ -136,7 +136,7 @@ inline vec3 &vec3::operator-=(const vec3 &v)
     return *this;
 }
 
-inline vec3 &vec3::operator*=(const float t)
+inline vec3& vec3::operator*=(const float t)
 {
     x *= t;
     y *= t;
@@ -144,7 +144,7 @@ inline vec3 &vec3::operator*=(const float t)
     return *this;
 }
 
-inline vec3 &vec3::operator/=(const float t)
+inline vec3& vec3::operator/=(const float t)
 {
     float k = 1.0f / t;
 
@@ -178,6 +178,11 @@ inline float vec3::squared_length() const
 //     y *= k;
 //     z *= k;
 // }
+
+inline vec3 sqrt_vec3(vec3 v)
+{
+    return vec3(sqrt(v.x), sqrt(v.y), sqrt(v.z));
+}
 
 inline vec3 round_int(vec3 v)
 {
