@@ -13,7 +13,7 @@ pub struct HitRecord<'mat, T> {
 #[non_exhaustive]
 pub enum Hittable<'mat> {
     Sphere(Sphere<'mat>),
-    HittableList(Vec<Hittable<'mat>>),
+    List(Vec<Hittable<'mat>>),
 }
 
 impl<'mat> Hittable<'mat> {
@@ -22,13 +22,13 @@ impl<'mat> Hittable<'mat> {
     }
 
     pub fn list(vec: Vec<Hittable<'mat>>) -> Self {
-        Hittable::HittableList(vec)
+        Hittable::List(vec)
     }
 
     pub fn hit(&self, ray: &Ray<f64>, t_min: f64, t_max: f64) -> Option<HitRecord<f64>> {
         match self {
             Hittable::Sphere(s) => s.hit(ray, t_min, t_max),
-            Hittable::HittableList(list) => {
+            Hittable::List(list) => {
                 let mut hit_record = None;
 
                 let mut closest_so_far = t_max;

@@ -29,11 +29,11 @@ fn main() -> io::Result<()> {
         Hittable::sphere(vec3(0.0, -100.5, -1.0), 100.0, &mat_2),
         Hittable::sphere(vec3(1.0, 0.0, -1.0), 0.5, &mat_3),
         Hittable::sphere(vec3(-1.0, 0.0, -1.0), 0.5, &mat_4),
-        Hittable::sphere(vec3(-1.0, 0.0, -1.0), -0.45, &mat_4),
+        Hittable::sphere(vec3(-1.0, 0.0, -1.0), -0.40, &mat_4),
     ]);
 
-    let nx = 1600u32;
-    let ny = 900u32;
+    let nx = 900u32;
+    let ny = 600u32;
     let ns = 100u32;
 
     let total_size = nx * ny;
@@ -73,7 +73,6 @@ fn main() -> io::Result<()> {
                         })
                         .map(|(u, v)| camera.get_ray(u, v))
                         .map(|ray| color(ray, &world))
-                        // .fold(Vec3::default(), |acc, x| acc + x);
                         .reduce(|| Vec3::default(), |a, b| a + b);
                     pb.inc(1);
                     col = 255.99 * (col / f64::from(ns)).sqrt();
@@ -83,14 +82,18 @@ fn main() -> io::Result<()> {
         })
         .collect::<Vec<_>>();
 
-    pb.finish_with_message("Rendering Complete.");
+    println!("Rendering complete!");
 
     let mut buf: RgbImage = ImageBuffer::new(nx, ny);
+
+    println!("Writing to file...");
 
     vec.into_iter()
         .for_each(|(x, y, pixel)| buf.put_pixel(x, y, pixel));
 
-    buf.save("./output/default_norec.png")?;
+    buf.save("./output/default.png")?;
+
+    println!("Write complete!");
 
     Ok(())
 }
