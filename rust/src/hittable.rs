@@ -16,7 +16,15 @@ pub enum Hittable<'mat> {
     HittableList(Vec<Hittable<'mat>>),
 }
 
-impl Hittable<'_> {
+impl<'mat> Hittable<'mat> {
+    pub fn sphere(center: Vec3<f64>, radius: f64, material: &'mat Material) -> Self {
+        Hittable::Sphere(Sphere::new(center, radius, material))
+    }
+
+    pub fn list(vec: Vec<Hittable<'mat>>) -> Self {
+        Hittable::HittableList(vec)
+    }
+
     pub fn hit(&self, ray: &Ray<f64>, t_min: f64, t_max: f64) -> Option<HitRecord<f64>> {
         match self {
             Hittable::Sphere(s) => s.hit(ray, t_min, t_max),
@@ -34,7 +42,6 @@ impl Hittable<'_> {
 
                 hit_record
             }
-            _ => None,
         }
     }
 }

@@ -77,11 +77,6 @@ int main() {
          << nx << " " << ny << endl
          << "255" << endl;
 
-    vec3 lower_left_corner(-2, -1, -1);
-    vec3 horizontal(4, 0, 0);
-    vec3 vertical(0, 2, 0);
-    vec3 origin(0, 0, 0);
-
     hittable *world = random_scene();
 
     vec3 lookfrom(13,2,3);

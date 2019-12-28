@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign};
+use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign, MulAssign, DivAssign, Neg};
 
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Vec3<T> {
@@ -7,9 +7,14 @@ pub struct Vec3<T> {
     pub z: T,
 }
 
+#[inline]
+pub fn vec3<T>(x: T, y: T, z: T) -> Vec3<T> {
+    Vec3::new(x, y, z)
+}
+
 impl<T> Vec3<T> {
     #[inline]
-    pub const fn from(x: T, y: T, z: T) -> Self {
+    pub const fn new(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
     }
 
@@ -20,49 +25,48 @@ impl<T> Vec3<T> {
 
     #[inline]
     pub const fn as_ref(&self) -> Vec3<&T> {
-        Vec3::from(&self.x, &self.y, &self.z)
-    }
-}
-
-impl <T: Default> Vec3<T> {
-    pub fn new() -> Self {
-        Default::default()
+        Vec3::new(&self.x, &self.y, &self.z)
     }
 }
 
 impl<T: Default> Default for Vec3<T> {
     fn default() -> Self {
-        Self::from(Default::default(), Default::default(), Default::default())
+        Self::new(Default::default(), Default::default(), Default::default())
     }
 }
 
 impl Vec3<f64> {
     #[inline]
-    pub fn length(&self) -> f64 {
+    pub fn length(self) -> f64 {
         self.squared_length().sqrt()
     }
 
     #[inline]
-    pub fn squared_length(&self) -> f64 {
+    pub fn squared_length(self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
     #[must_use]
     #[inline]
-    pub fn sqrt(&self) -> Self {
-        Self::from(self.x.sqrt(), self.y.sqrt(), self.z.sqrt())
+    pub fn sqrt(self) -> Self {
+        Self::new(self.x.sqrt(), self.y.sqrt(), self.z.sqrt())
     }
 
     #[inline]
-    pub fn unit(&self) -> Self {
-        *self / self.length()
+    pub fn unit(self) -> Self {
+        self / self.length()
+    }
+
+    #[inline]
+    pub fn round(self) -> Self {
+        Self::new(self.x.floor(), self.y.floor(), self.z.floor())
     }
 }
 
 impl<T: Mul<Output = T> + Add<Output = T>> Vec3<T> {
     #[inline]
     pub fn dot(self, rhs: Self) -> T {
-        self.x * rhs.x + self.y + rhs.y + self.z + rhs.z
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 }
 
@@ -81,7 +85,7 @@ impl Mul<Vec3<f64>> for f64 {
     type Output = Vec3<f64>;
 
     fn mul(self, rhs: Self::Output) -> Self::Output {
-        Vec3::from(self * rhs.x, self * rhs.y, self * rhs.z)
+        Vec3::new(self * rhs.x, self * rhs.y, self * rhs.z)
     }
 }
 
@@ -89,7 +93,7 @@ impl<T: Add<Output = T>> Add for Vec3<T> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Self::from(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
@@ -98,7 +102,7 @@ impl<T: Sub<Output = T>> Sub for Vec3<T> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        Self::from(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 
@@ -107,7 +111,7 @@ impl<T: Mul<Output = T>> Mul for Vec3<T> {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
-        Self::from(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
+        Self::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 }
 
@@ -115,7 +119,7 @@ impl<T: Mul<Output = T> + Copy> Mul<T> for Vec3<T> {
     type Output = Self;
 
     fn mul(self, rhs: T) -> Self::Output {
-        Self::from(self.x * rhs, self.y * rhs, self.z * rhs)
+        Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
@@ -123,7 +127,7 @@ impl<T: Div<Output = T>> Div for Vec3<T> {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
-        Self::from(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
+        Self::new(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z)
     }
 }
 
@@ -131,7 +135,7 @@ impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
     type Output = Self;
 
     fn div(self, rhs: T) -> Self::Output {
-        Self::from(self.x / rhs, self.y / rhs, self.z / rhs)
+        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 
@@ -180,5 +184,13 @@ impl<T: DivAssign + Copy> DivAssign<T> for Vec3<T> {
         self.x /= rhs;
         self.y /= rhs;
         self.z /= rhs;
+    }
+}
+
+impl<T: Neg<Output = T>> Neg for Vec3<T> {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Self::new(-self.x, -self.y, -self.z)
     }
 }
