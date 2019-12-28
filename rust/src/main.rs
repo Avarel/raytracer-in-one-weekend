@@ -1,24 +1,28 @@
+mod camera;
 mod hittable;
-mod sphere;
-mod vec3;
 mod material;
 mod ray;
-mod camera;
+mod sphere;
+mod vec3;
 
-use vec3::{Vec3, vec3};
-use hittable::Hittable;
-use ray::Ray;
-use material::Material;
 use camera::Camera;
+use hittable::Hittable;
+use material::Material;
+use ray::Ray;
+use vec3::{vec3, Vec3};
+
+use image::{ImageBuffer, Rgb, RgbImage};
+
+use indicatif::{ProgressBar, ProgressStyle};
 
 use rayon::prelude::*;
 
-use std::io::{self, Write};
+use std::io;
 
 fn main() -> io::Result<()> {
     let mat_1 = Material::lambertian(vec3(0.1, 0.2, 0.5));
     let mat_2 = Material::lambertian(vec3(0.8, 0.8, 0.0));
-    let mat_3 = Material::metal(vec3(0.8, 0.6, 0.2), 0.3);
+    let mat_3 = Material::metal(vec3(0.8, 0.6, 0.2), 0.0);
     let mat_4 = Material::dielectric(1.5);
     let world = Hittable::list(vec![
         Hittable::sphere(vec3(0.0, 0.0, -1.0), 0.5, &mat_1),
@@ -28,54 +32,87 @@ fn main() -> io::Result<()> {
         Hittable::sphere(vec3(-1.0, 0.0, -1.0), -0.45, &mat_4),
     ]);
 
-    let nx = 800;
-    let ny = 400;
-    let ns = 500;
+    let nx = 1600u32;
+    let ny = 900u32;
+    let ns = 100u32;
 
-    let mut file = std::fs::OpenOptions::new().write(true).create(true).open("./output/default.ppm")?;
-    file.set_len(0)?;
-    write!(file, "P3\n{} {}\n255\n", nx, ny)?;
+    let total_size = nx * ny;
+
+    let pb = ProgressBar::new(total_size.into());
+    pb.set_style(ProgressStyle::default_bar()
+        .template("Rendering {spinner:.green} [{elapsed_precise}] {percent:>3}% [{bar:40.cyan/blue}] {pos}/{len} pixels ({per_sec} | {eta})")
+        .progress_chars("#>-"));
 
     let look_from = vec3(3.0, 3.0, 2.0);
     let look_at = vec3(0.0, 0.0, -1.0);
     let dist_to_focus = (look_from - look_at).length();
-    let aperture = 2.0;
-    let camera = Camera::new(look_from, look_at, vec3(0.0, 1.0, 0.0), 20.0, f64::from(nx) / f64::from(ny), aperture, dist_to_focus);
+    let aperture = 0.0;
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        vec3(0.0, 1.0, 0.0),
+        20.0,
+        f64::from(nx) / f64::from(ny),
+        aperture,
+        dist_to_focus,
+    );
 
-    for j in (0..ny).rev() {
-        for i in 0..nx {
-            // Perform the anti-aliasing step with parallelism made easy.
-            let mut col = (0..ns).into_par_iter().map(|_| {
-                let u = (f64::from(i) + rand::random::<f64>()) / f64::from(nx);
-                let v = (f64::from(j) + rand::random::<f64>()) / f64::from(ny);
-                let ray = camera.get_ray(u, v);
-                color(ray, &world, 0)
-            }).reduce(|| Vec3::default(), |a, b| a + b);
+    let vec = (0..ny)
+        .into_par_iter()
+        .flat_map(|j| {
+            (0..nx)
+                .into_par_iter()
+                .map(|i| {
+                    let mut col = (0..ns)
+                        .into_par_iter()
+                        .map(|_| {
+                            (
+                                (f64::from(i) + rand::random::<f64>()) / f64::from(nx),
+                                (f64::from(j) + rand::random::<f64>()) / f64::from(ny),
+                            )
+                        })
+                        .map(|(u, v)| camera.get_ray(u, v))
+                        .map(|ray| color(ray, &world))
+                        // .fold(Vec3::default(), |acc, x| acc + x);
+                        .reduce(|| Vec3::default(), |a, b| a + b);
+                    pb.inc(1);
+                    col = 255.99 * (col / f64::from(ns)).sqrt();
+                    (i, j, Rgb([col.x as u8, col.y as u8, col.z as u8]))
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
 
-            col /= f64::from(ns);
-            col = col.sqrt();
-            col *= 255.99;
-            col = col.round();
+    pb.finish_with_message("Rendering Complete.");
 
-            write!(file, "{} {} {}\n", col.x, col.y, col.z)?;
-        }
-    }
+    let mut buf: RgbImage = ImageBuffer::new(nx, ny);
+
+    vec.into_iter()
+        .for_each(|(x, y, pixel)| buf.put_pixel(x, y, pixel));
+
+    buf.save("./output/default_norec.png")?;
 
     Ok(())
 }
 
-fn color(ray: Ray<f64>, world: &Hittable, depth: usize) -> Vec3<f64> {
-    if let Some(rec) = world.hit(&ray, 0.00001, std::f64::MAX) {
+fn color(mut ray: Ray<f64>, world: &Hittable) -> Vec3<f64> {
+    let mut factor = Vec3::new(1.0, 1.0, 1.0);
+    let depth = 0;
+
+    while let Some(rec) = world.hit(&ray, 0.00001, std::f64::MAX) {
         if depth >= 50 {
-            return Vec3::default()
+            return Vec3::default();
         } else if let Some((scattered, attenuation)) = rec.material.scatter(ray, rec) {
-            return attenuation * color(scattered, world, depth + 1)
+            ray = scattered;
+            factor = attenuation * factor;
         } else {
-            return Vec3::default()
+            return Vec3::default();
         }
     }
 
     let unit_direction = ray.direction.unit();
     let t = 0.5 * (unit_direction.y + 1.0);
-    (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0)
+    let sky_color = (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+
+    factor * sky_color
 }

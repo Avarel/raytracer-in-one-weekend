@@ -1,8 +1,8 @@
 use crate::ray::Ray;
-use crate::vec3::{Vec3, vec3};
+use crate::vec3::{vec3, Vec3};
 
 pub struct Camera {
-    lower_left_corner: Vec3<f64>,
+    top_left_corner: Vec3<f64>,
     horizontal: Vec3<f64>,
     vertical: Vec3<f64>,
     origin: Vec3<f64>,
@@ -36,9 +36,7 @@ impl Camera {
             _w: w,
             u,
             v,
-            lower_left_corner: look_from
-                - u * half_width * focus_dist
-                - v * half_height * focus_dist
+            top_left_corner: look_from - u * half_width * focus_dist + v * half_height * focus_dist
                 - w * focus_dist,
             horizontal: u * 2.0 * half_width * focus_dist,
             vertical: v * 2.0 * half_height * focus_dist,
@@ -50,7 +48,7 @@ impl Camera {
         let offset = self.u * rd.x + self.v * rd.y;
         Ray::new(
             self.origin + offset,
-            self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin - offset,
+            self.top_left_corner + s * self.horizontal - t * self.vertical - self.origin - offset,
         )
     }
 
